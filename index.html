@@ -383,8 +383,8 @@
     <div class="card">
       <div class="section-title">👤 User</div>
       <div class="form-group">
-        <label>ລະຫັດUser</label>
-        <input type="text" id="user" placeholder="ລະຫັດUser" />
+        <label>ລະຫັດພະນັກງານ</label>
+        <input type="text" id="user" placeholder="ລະຫັດພະນັກງານ" />
       </div>
     </div>
  
@@ -436,7 +436,7 @@
 <div class="toast" id="toast"></div>
  
 <script>
-  var API_URL = "https://script.google.com/macros/s/AKfycbwuzvWvtHJmRiKTN0Cc27WoOjCPmcDtaNaiAU26DYlre0wZAv63p_38oSJycRqVbP0/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycby0zUT2Du-lSm0MESE6jlzRwWU2jxbtSkST_yD3Lv6N3gdwS3omdFo6aJAkhsaXstnT/exec";
  
   function updateCity() {
     document.getElementById("cityDisplay").value = document.getElementById("city").value;
@@ -537,18 +537,22 @@
       note:    document.getElementById("note").value
     };
  
-    fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.status === "success") {
-        showToast("✅ ບັນທຶກຂໍ້ມູນສຳເລັດ!", "success");
-        document.getElementById("ftthForm").reset();
-        document.querySelectorAll(".pill-label.checked").forEach(function(el) { el.classList.remove("checked"); });
-        document.getElementById("cityDisplay").value = "";
-        document.getElementById("gpsStatus").textContent = "";
-      } else {
-        showToast("❌ " + data.message, "error");
-      }
+    // Google Apps Script ຕ້ອງໃຊ້ no-cors + URLSearchParams
+    var form = new URLSearchParams();
+    form.append("data", JSON.stringify(payload));
+ 
+    fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: form.toString()
+    })
+    .then(function() {
+      showToast("✅ ບັນທຶກຂໍ້ມູນສຳເລັດ!", "success");
+      document.getElementById("ftthForm").reset();
+      document.querySelectorAll(".pill-label.checked").forEach(function(el) { el.classList.remove("checked"); });
+      document.getElementById("cityDisplay").value = "";
+      document.getElementById("gpsStatus").textContent = "";
     })
     .catch(function() { showToast("❌ ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່", "error"); })
     .finally(function() { btn.disabled = false; spinner.classList.remove("show"); });
